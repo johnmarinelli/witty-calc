@@ -17,6 +17,7 @@ private:
 
     NumberButton* mNumbers[numberCount];
     OperationButton* mOperations[opCount];
+    WPushButton* mDecimal;
     CalculatorDisplay* mDisplay;
 
     std::string mOperation;

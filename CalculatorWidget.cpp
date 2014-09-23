@@ -17,6 +17,7 @@ void CalculatorWidget::initOperationButtons()
     mOperations[1] = new OperationButton("-", this);
     mOperations[2] = new OperationButton("*", this);
     mOperations[3] = new OperationButton("/", this);
+    mOperations[4] = new OperationButton("=", this);
 
     for(int i = 0; i < opCount; ++i){
         addWidget(mOperations[i]);
@@ -39,7 +40,7 @@ double CalculatorWidget::performOperation(double rhs)
     if(mOperation == "+") mResult += rhs;
     else if(mOperation == "-") mResult -= rhs;
     else if(mOperation == "*") mResult *= rhs;
-    else if(mOperation == "/") mResult /= rhs;
+    else if(mOperation == "/") if(rhs != 0) mResult /= rhs;
     
     return mResult;
 }
@@ -50,7 +51,15 @@ CalculatorWidget::CalculatorWidget(WContainerWidget* parent) : WContainerWidget(
     addWidget(mDisplay);
 
     initNumberButtons();
+    
+    mDecimal = new WPushButton(".", this);
+    mDecimal->clicked().connect(std::bind([&] () {
+        mDisplay->push('.');
+    }));
+
+    addWidget(mDecimal);
     initOperationButtons();
+
 }
 
 CalculatorWidget::~CalculatorWidget()
