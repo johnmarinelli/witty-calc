@@ -13,20 +13,26 @@ class CalculatorWidget : public WContainerWidget
 {
 private:
     enum { numberCount = 10 };
-    enum { opCount = 5 };
+    enum { opCount = 4 };
 
     NumberButton* mNumbers[numberCount];
     OperationButton* mOperations[opCount];
     WPushButton* mDecimal;
+    WPushButton* mEquals;
+    WPushButton* mClear;
     CalculatorDisplay* mDisplay;
 
     std::string mOperation;
+    double mLHS;
+    double mRHS;
     double mResult;
 
     void initNumberButtons();
     void initOperationButtons();
 
-    double performOperation(double rhs);
+    void setEquation(double val);
+
+    double performOperation();
 
 public:
     CalculatorWidget(WContainerWidget* parent);

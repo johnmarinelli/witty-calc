@@ -17,35 +17,42 @@ void CalculatorWidget::initOperationButtons()
     mOperations[1] = new OperationButton("-", this);
     mOperations[2] = new OperationButton("*", this);
     mOperations[3] = new OperationButton("/", this);
-    mOperations[4] = new OperationButton("=", this);
 
     for(int i = 0; i < opCount; ++i){
         addWidget(mOperations[i]);
 
         mOperations[i]->clicked().connect(std::bind([=] (std::string op) {
-           mOperation = op;
-           double rhs = mDisplay->getValue();
-           mDisplay->clear();
-           double res = performOperation(rhs);
-           mDisplay->setText(std::to_string(res));
-
-           std::cout << rhs << " " << res << " "<< op << std::endl;
-
+            /* save operation in mOperation member variable */
+            mOperation = op;
+            
+            /* retrieve value from mDisplay before we clear it for next number */
+            double val = mDisplay->getValue();           
+            setEquation(val);
+            mDisplay->clear();
         }, mOperations[i]->getOperation()));
     }
 }
 
-double CalculatorWidget::performOperation(double rhs)
+void CalculatorWidget::setEquation(double val)
 {
-    if(mOperation == "+") mResult += rhs;
-    else if(mOperation == "-") mResult -= rhs;
-    else if(mOperation == "*") mResult *= rhs;
-    else if(mOperation == "/") if(rhs != 0) mResult /= rhs;
-    
+    /* check to see if we need to set rhs */
+    if(mLHS != 0.0) mRHS = val;
+    else mLHS = val;
+}
+
+double CalculatorWidget::performOperation()
+{
+    if(mOperation == "+") mResult = mLHS + mRHS;
+    else if(mOperation == "-") mResult = mLHS - mRHS;
+    else if(mOperation == "*") mResult = mLHS * mRHS;
+    else if(mOperation == "/") if(mRHS != 0) mResult = mLHS / mRHS;
+    mLHS = mResult;
+    mRHS = 0.0;
+
     return mResult;
 }
 
-CalculatorWidget::CalculatorWidget(WContainerWidget* parent) : WContainerWidget(parent), mOperation(""), mResult(0)
+CalculatorWidget::CalculatorWidget(WContainerWidget* parent) : WContainerWidget(parent), mOperation("+"), mLHS(0), mRHS(0), mResult(0)
 {
     mDisplay = new CalculatorDisplay(this);
     addWidget(mDisplay);
@@ -60,6 +67,24 @@ CalculatorWidget::CalculatorWidget(WContainerWidget* parent) : WContainerWidget(
     addWidget(mDecimal);
     initOperationButtons();
 
+    mEquals = new WPushButton("=", this);
+    mEquals->clicked().connect(std::bind([&] () {
+        double val = mDisplay->getValue();
+        mDisplay->clear();
+        setEquation(val);
+        mDisplay->setText(std::to_string(performOperation()));
+    }));
+
+    addWidget(mEquals);
+
+    mClear = new WPushButton("Clear", this);
+    mClear->clicked().connect(std::bind([&] () {
+        mLHS = mRHS = 0.0;
+        mResult = 0;
+        mDisplay->clear();
+    }));
+
+    addWidget(mClear);
 }
 
 CalculatorWidget::~CalculatorWidget()
