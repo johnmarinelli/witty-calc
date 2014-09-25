@@ -1,0 +1,154 @@
+<h2>Getting started: main.cpp, and setting up our calculator</h2>
+<img src="phase3.png" width="500" height="500" alt="Our Wt Calculator"></img>
+
+<p>The first thing we'll do is layout our project, so we can see from a broader perspective exactly <i>how</i> we'll be putting it together.  Let's start with main.cpp:</p>
+
+<pre class="code">
+
+#include <Wt/WApplication>
+#include <Wt/WContainerWidget>
+#include <Wt/WText>
+
+using namespace Wt;
+
+WApplication* createApplication(const WEnvironment& env)
+{
+    WApplication* app = new WApplication(env);
+    return app;
+}
+
+int main(int argc, char* args[])
+{
+    return WRun(argc, args, &createApplication);
+}
+
+</pre>
+
+<p>If you've already done the <a href="http://www.webtoolkit.eu/wt/doc/tutorial/wt.html#_hello_wt">Hello World</a> tutorial, then this should look familiar to you.  WRun() will start the httpd server until it receives a KILL signal, or even more fun, a segfault.  Its last argument is a function pointer to a function that returns a pointer to a WApplication object.  The function in question is createApplication(); it takes a WEnvironment object as input and builds a WApplication from the environment, and finally returns the WApplication.</p>
+<p>To compile, use <pre class="inline-code">g++ -o calculator main.cpp -lwthttp -lwt -lboost_random -lboost_regex -lboost_signals -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lboost_date_time</pre> To run, type <pre class="inline-code">./calculator --docroot . --http-address 0.0.0.0 --http-port 8000</pre></p>
+
+<p class="note">I would suggest saving the compile script into a .sh file, as we'll be adding to it later.</p>
+
+<h2>The pieces</h2>
+</p>So, we know our calculator will have at least three pieces: the number buttons, the display field, and the operation buttons.  We're going to chuck all of these into one parent widget, aptly named "CalculatorWidget", that will inherit from WContainerWidget.  We also will want to add our own functionality to the number and operation buttons, so we'll create a "NumberButton" class and "OperationButton" class that inherits from WPushButton.  Our display will have some custom functionality too, so let's make it a child of a WLineEdit.</p>
+
+<p class="note">In the code, you'll notice that every constructor of a WObject child has a WContainerWidget* in the parameters.  You can consider this the <i>HTML</i> parent of the element; for our buttons, this will be the CalculatorWidget; for our CalculatorWidget, it will be our application.</p>
+
+<pre class="code">
+/* CalculatorDisplay.hpp */
+#ifndef CalculatorDisplay_hpp
+#define CalculatorDisplay_hpp
+
+#include <Wt/WContainerWidget>
+
+/* This will be for making sure the user doesn't enter anything other than a number into our display field.  Unnecessary for this project, but it's a good feature to know */
+#include <Wt/WIntValidator>
+#include <Wt/WLineEdit>
+
+using namespace Wt;
+
+class CalculatorDisplay : public WLineEdit
+{
+private:
+    std::string mValue;
+    WIntValidator* mValidator;
+
+public:
+    CalculatorDisplay(WContainerWidget* parent=0);
+
+    ~CalculatorDisplay();
+};
+
+#endif
+</pre>
+
+<pre class="code">
+/* NumberButton.hpp */
+#ifndef NumberButton_hpp
+#define NumberButton_hpp
+
+#include <Wt/WContainerWidget>
+#include <Wt/WPushButton>
+
+using namespace Wt;
+
+class NumberButton : public WPushButton
+{
+private:
+    double mValue;
+
+public:
+    NumberButton(int val, WContainerWidget* parent=0);
+};
+
+#endif
+</pre>
+
+<pre class="code">
+/* OperationButton.hpp */
+#ifndef OperationButton_hpp
+#define OperationButton_hpp
+
+#include <Wt/WContainerWidget>
+#include <Wt/WPushButton>
+
+using namespace Wt;
+
+class OperationButton : public WPushButton
+{
+private:
+    std::string mOperation;
+
+public:
+    OperationButton(std::string op, WContainerWidget* parent=0);
+};
+
+#endif
+</pre>
+
+<pre class="code">
+/* CalculatorWidget.hpp */
+#ifndef CalculatorWidget_hpp
+#define CalculatorWidget_hpp
+
+#include <Wt/WContainerWidget>
+#include "NumberButton.hpp"
+#include "OperationButton.hpp"
+#include "CalculatorDisplay.hpp"
+
+class CalculatorWidget : public WContainerWidget
+{
+private:
+    /* I use untyped enums for class consts because we need the values 'numberCount' and 'opCount' inside our class header */
+    /* more info: http://codewrangler.home.comcast.net/~codewrangler/tech_info/cpp_const.html */
+
+    enum { numberCount = 10 };
+    enum { opCount = 4 };
+
+    std::string mOperation;
+
+    NumberButton* mNumbers[numberCount];
+    OperationButton* mOperations[opCount];
+    CalculatorDisplay* mDisplay;
+
+public:
+    CalculatorWidget(WContainerWidget* parent);
+};
+
+#endif
+</pre>
+
+Cool!  Add empty .cpp files for each of these; for example:
+
+<pre class="code">
+/* CalculatorDisplay.cpp */
+#include "CalculatorDisplay.hpp"
+</pre>
+
+We'll get to filling these in for the next chapter.  For now, ensure that it compiles by using 
+<pre class="code">
+g++ -std=c++11 -o calculator CalculatorDisplay.cpp OperationButton.cpp NumberButton.cpp CalculatorWidget.cpp main.cpp 
+-lwthttp -lwt -lboost_random -lboost_regex -lboost_signals -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lboost_date_time
+</pre>
+and saving it to a .sh file for ease-of-use.
+

@@ -1,0 +1,35 @@
+<h1>Building a calculator with WT</h1>
+<h2>What is Wt?</h2>
+<p>Wt is a widget-centric web framework that uses C++ and WebSockets to build web apps.  More information can be found at <a href="http://www.webtoolkit.eu/wt">their homepage.</a></p>
+
+<h2>Motivation</h2>
+<p>Wt has a plethora of example code explaining how to use a lot of its features; however, it has few <i>tutorials</i> that guide you through the framework.  While this may suffice for languages that are already established for web development, C++ has a notorious reputation for being "hard".  The purpose of this tutorial is to draw some parallels between a typical web app written in an interpreted language and Wt.</p>
+
+<h2>I assume you already know...</h2>
+<ul>
+    <li>Some basic C++ (pointers, classes, inheritance)</li>
+    <li>How to compile and link C++ programs with g++ (a build script will be provided and explained, but you should know what 'g++ main.cpp -o hello' means)</li>
+    <li>The Wt '<a href="http://www.webtoolkit.eu/wt/doc/tutorial/wt.html#_hello_wt">Hello World</a>' tutorial</li>
+</ul>
+
+<h2>This tutorial will show you:</h2>
+<ul>
+    <li>How to encapsulate components of your app into multiple-use Widgets</li>
+    <li>How to aggregate different pieces of your app into a Widget</li>
+    <li>How to use Wt's powerful <a href="http://www.webtoolkit.eu/wt/doc/reference/html/group__signalslot.html">Signals & Slots</a> system</li>
+    <li>How std::bind works, and how it works with the Signals & Slots system</li>
+</ul>
+
+<hr/>
+
+<h2>Setup</h2>
+<h3>You will need...</h3>
+<ul>
+    <li>A compiler that supports C++11</li>
+    <li>The Wt framework installed on your machine (Wt relies on Boost, so you'll need that too)</li>
+</ul>
+
+<p>This tutorial was written using GCC version 4.8.2 and Linux Mint 17 during Wt 3.3.3.</p>
+<p>Wt should have a reasonably recent version in your package manager, as should Boost.</p>
+
+<hr/>

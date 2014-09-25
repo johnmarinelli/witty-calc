@@ -1,0 +1,14 @@
+.display{
+  width: 100%;
+  font-size: 2em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.number-button{
+  width: 33%; 
+}
+
+.operation-button{
+  width: 25%;
+}
